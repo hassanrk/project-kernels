@@ -1,0 +1,369 @@
+---
+title: "ECON 490 (K3) Report 1"
+author: "Hassan Rahim Kamil"
+date: "1/25/2019"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+# Drug Consumption (Quantified) Dataset
+
+## Introduction
+
+Drug addiction has long been hypothesized to be associated with the one's own psychology. Some popular psychometric measures like the NEO-FFI-R (neuroticism, extraversion, openness to experience, agreeableness, and conscientiousness), the BIS-11 (impulsivity) and the ImpSS (sensation seeking) are meant to model the personality traits of a person. These measurements along with other controls like `age`, `gender`, `education`, `country` and `ethnicity` are collected to model for several indicators of substance abuse for different drugs. 
+
+A number of literatures have attempted to illustrate the relationship between the personality traits and substance abuse. For example, Roncero et al. noted the relationship between high N and cocaine-induced drug consumption. Another study from Vollrath & Torgersen noted that a low score C and a high score of N or E correlate strongly with hazardous health behaviors. Since substance abuse has long been considered as a pressing economic problem, we could attempt to model the relationships between covariates and the indicators for substance abuse so that policies could better target specific areas to maximize payoffs.
+
+
+### Data Overview [[Source](https://archive.ics.uci.edu/ml/datasets/Drug+consumption+%28quantified%29#)]
+
+Instead of coding the categorical variables as factors, the dataset scales them so that the variables can better describe the distances in the metric space and appear as numeric.
+
+A summary of the variables and their respective codes are as following:
+
+| Attributes | Description                                   |
+|------------|-----------------------------------------------|
+| age        | age of participant                            |
+| gender     | gender of participant                         |
+| education  | level of education                            |
+| country    | country of current residence of participant   |
+| ethnicity  | ethnicity of participant                      |
+| Nscore     | NEO-FFI-R Neuroticism                         |
+| Escore     | NEO-FFI-R Extraversion                        |
+| Oscore     | NEO-FFI-R Openness to experience              |
+| Ascore     | NEO-FFI-R Agreeableness                       |
+| Cscore     | NEO-FFI-R Conscientiousness                   |
+| Impulsive  | impulsiveness measured by BIS-11              |
+| SS         | sensation seeing measured by ImpSS            |
+| alcohol    | class of alcohol consumption                  |
+| amphet     | class of amphetamines consumption             |
+| amyl       | class of amyl nitrite consumption             |
+| benzo      | class of benzodiazepine consumption           |
+| caff       | class of caffeine consumption                 |
+| cannabis   | class of cannabis consumption                 |
+| choc       | class of chocolate consumption                |
+| coke       | class of cocaine consumption                  |
+| crack      | class of crack consumption                    |
+| ecstasy    | class of ecstasy consumption                  |
+| heroin     | class of heroin consumption                   |
+| ketamine   | class of ketamine consumption                 |
+| legalh     | class of legal highs consumption              |
+| lsd        | class of lsd consumption                      |
+| meth       | class of methadone consumption                |
+| mushroom   | class of magic mushrooms consumption          |
+| nicotine   | class of nicotine consumption                 |
+| semer      | class of fictitious drug Semeron consumption  |
+| vsa        | class of volatile substance abuse consumption |
+
+1) `age`
+
+| Value    | Meaning |
+|----------|---------|
+| -0.95197 | 18-24   |
+| -0.07854 | 25-34   |
+| 0.49788  | 35-44   |
+| 1.09449  | 45-54   |
+| 1.82213  | 55-64   |
+| 2.59171  | 65+     |
+
+2) `gender`
+
+| Value    | Meaning |
+|----------|---------|
+| 0.48246  | Female  |
+| -0.48246 | Male    |
+
+3) `education`
+
+| Value    | Meaning                                              |
+|----------|------------------------------------------------------|
+| -2.43591 | Left school before 16 years                          |
+| -1.73790 | Left school at 16 years                              |
+| -1.43719 | Left school at 17 years                              |
+| -1.22751 | Left school at 18 years                              |
+| -0.61113 | Some college or university, no certificate or degree |
+| -0.05921 | Professional certificate/ diploma                    |
+| 0.45468  | University degree                                    |
+| 1.16365  | Masters degree                                       |
+| 1.98437  | Doctorate degree                                     |
+
+4) `country`
+
+| Value    | Meaning             |
+|----------|---------------------|
+| -0.09765 | Australia           |
+| 0.24923  | Canada              |
+| -0.46841 | New Zealand         |
+| -0.28519 | Other               |
+| 0.21128  | Republic of Ireland |
+| 0.96082  | UK                  |
+| -0.57009 | USA                 |
+
+5) `ethnicity`
+
+| Value    | Meaning           |
+|----------|-------------------|
+| -0.50212 | Asian             |
+| -1.10702 | Black             |
+| 1.90725  | Mixed-Black/Asian |
+| 0.12600  | Mixed-White/Asian |
+| -0.22166 | Mixed-White/Black |
+| 0.11440  | Other             |
+| -0.31685 | White             |
+
+The personality scores are calculated on a "continuous" scale so they are coded continuously, whie the substances are coded as the following:
+
+| Value | Meaning                |
+|-------|------------------------|
+| CLO   | Never Used             |
+| CL1   | Used over a Decade Ago |
+| CL2   | Used in Last Decade    |
+| CL3   | Used in Last Year      |
+| CL4   | Used in Last Month     |
+| CL5   | Used in Last Week      |
+| CL6   | Used in Last Day       |
+
+## Descriptive Data Analysis
+
+We could probe the dataset as following:
+
+```{r data}
+
+# Reading the data from source
+
+drugs = read.csv("https://archive.ics.uci.edu/ml/machine-learning-databases/00373/drug_consumption.data", header = F)[-1]
+
+# Naming the columns in order of the description on source.
+
+colnames(drugs) = c(
+  "age",
+  "gender",
+  "education",
+  "country",
+  "ethinicity",
+  "Nscore",
+  "Escore",
+  "Oscore",
+  "Ascore",
+  "Cscore",
+  "Impulsive",
+  "SS",
+  "alcohol",
+  "amphet",
+  "amyl",
+  "benzo",
+  "caff",
+  "cannabis",
+  "choc",
+  "coke",
+  "crack",
+  "ecstasy",
+  "heroin",
+  "ketamine",
+  "legalh",
+  "lsd",
+  "meth",
+  "mushroom",
+  "nicotine",
+  "semer",
+  "vsa"
+  )
+
+# Dimension of dataset
+
+dim(drugs)
+
+# First five observations of the dataset
+
+head(drugs, 5)
+
+# Summary of the dataset
+
+summary(drugs)
+
+# Structure of the dataset
+
+str(drugs)
+
+```
+
+Now, after that brief introduction, we are ready to examine our data more closely.
+
+## Explanatory Data Analysis
+
+```{r libraries, message = FALSE, warning = FALSE}
+
+pkg_list = c("tidyverse", "corrplot", "gridExtra")
+mia_pkgs = pkg_list[!(pkg_list %in% installed.packages()[,"Package"])]
+if(length(mia_pkgs) > 0) install.packages(mia_pkgs)
+loaded_pkgs = lapply(pkg_list, require, character.only=TRUE)
+
+```
+
+**Correlation matrix:**
+
+```{r correlation 1}
+
+# correlation between covariates
+
+corr = cor(drugs[1:12]) %>% round(1)
+
+corrplot(corr, method = "color", addCoef.col = "black", type = "upper")
+
+```
+
+We noticed that none of the covariates are strongly correlated, so we can assume that none of them are collinear.
+
+Now we will try to find the correlation between some potential dependent variables and independent variables. Based on the [data description](https://archive.ics.uci.edu/ml/datasets/Drug+consumption+%28quantified%29#), we have 20 dependent variables with 6 classes each. Since it is hard to visualize the correlation with factor variables (since the covariates are technically factor variables before quantified, however still random), then we will use the correlogram to visualize the relationships like previously.
+
+```{r correlation 2}
+
+y = lapply(drugs[13:31], as.character) %>% 
+  lapply(., FUN = str_extract, pattern = "[:digit:]") %>% 
+  lapply(., as.numeric) %>% 
+  do.call(cbind, .)
+
+corr2 = round(cor(drugs[1:12], y), 1)
+
+corrplot(corr2, method = "color", addCoef.col = "black")
+
+
+```
+
+**Scatter plots:**
+
+Now, we will attempt to plot 9 of the most correlated relationships.
+
+```{r plots}
+
+y.new = drugs[, c("cannabis", "lsd", "mushroom")]
+x.new = drugs[, c("country", "Oscore", "SS")]
+
+drug.new = cbind.data.frame(x.new, y.new)
+
+
+# Plotting y variables against x variables (with geom_jitter to see density at each point)
+
+count = 0
+
+for(i in 1:ncol(x.new)){
+  for(j in 1:ncol(y.new)){
+    count = count+1
+    assign(paste0("p", count),
+           ggplot(drug.new, aes_string(x = names(x.new[i]), y = names(y.new[j]))) + 
+             theme_bw() + 
+             geom_jitter(color = "darkblue", alpha = 0.3) +
+             labs(title = paste(names(y.new[j]), "vs.", names(x.new[i])))
+           )
+  }
+}
+
+
+# Printing the plots
+
+mget(paste0("p", 1:9)) 
+
+```
+
+As we can see, the relationships are certainly unusual given the nature of our dataset. However correlated, some covariates appear to be discrete. For this reason, we would have to utilize the variable selection algorithms that would perform well even if the variables are not continuous.
+
+**Density plots:**
+
+If we look at the density plots for each personality scores, we will find that each of them approximate a normal distribution.
+
+```{r score plot}
+
+# Extracting the personality scores
+
+scores = drugs[6:12]
+
+for(i in 1:ncol(scores)){
+  assign( paste0("score", i),
+          ggplot(drugs, aes_string(x = names(scores[i]))) +
+            geom_density(color = "darkblue") +
+            theme_bw() +
+            scale_y_continuous(labels = function(x) paste0(x*100, "%")) +
+            labs(title = names(scores[i]))
+  )
+}
+
+# Plotting
+
+grid.arrange(score1, score2, score3, score4, score5, score6, score7, 
+             nrow = 2)
+
+```
+
+If we assume independence, then $\sum_{i= 1}^{7} Z_i \sim N(\sum_{i=1}^{7} \mu_i, \sum_{i=1}^{7} \sigma_i^2)$, which could prove useful for hypothesis testing of parametric models or for creating another normal variable.
+
+We could also see that the distributions have already been standardized.
+
+```{r summary statistics}
+# Mean
+(mu = colMeans(scores))
+
+# Variance
+(sigma = apply(scores, 2, var))
+
+```
+
+Now, if we investigate the dependent variables, we could uncover a few interesting information.
+
+```{r box plots, warning = F}
+
+# Changing from wide to long format
+
+long = drugs %>% 
+  gather(type, class, alcohol:vsa)
+
+# Plotting frequencies by substance
+
+ggplot(long, aes(x = class, y = ..count.., fill = type)) + 
+  geom_bar() + 
+  facet_wrap(~type) + 
+  theme_bw() + 
+  theme(axis.text.x = element_text(angle = 90))
+
+```
+
+Since the classes are coded as `CL0` for "Never Used" and `CL1:6` for "Has Been Used At Least Once", then we can do the following transformation:
+
+```{r transformation}
+
+# Code "CL0" as 0 and the rest as 1
+
+substance.binary = apply(drugs[,13:31], 2, 
+                         FUN = function(i) ifelse(i == "CL0", yes = "0", no = "1")) %>% 
+  data.frame
+
+# Changing from long to wide format
+
+long2 = substance.binary %>% 
+  gather(type, class, alcohol:vsa)
+
+# Saving the binary code in a dataset
+
+drugs.binary = drugs %>% .[-(13:31)] %>% cbind.data.frame(., substance.binary)
+
+# Plotting
+
+ggplot(long2, aes(x = class, y = ..count.., fill = type)) + 
+  geom_bar() + 
+  facet_wrap(~type) + 
+  theme_bw()
+
+  
+```
+
+We can see that almost all drugs have "takers", except Semeron, which seems to have significantly more "never-takers". This is indicated in [page 4](https://arxiv.org/pdf/1506.06297.pdf) of the data description that Semeron is meant to be a fictitious drug to identify over-claimers.
+
+
+
+### Conclusion
+
+Evidently, this is a classification problem that we could attempt to solve by using the different Machine Learning techniques. Some objectives that we could attempt to solve are:
+
+- to identify the association of personality profiles with drug consumption.
+- to predict the risk of drug consumption for each individual according to their personality profiles.
+- to better binarize each variable according to the relationships.
