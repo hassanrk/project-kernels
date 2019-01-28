@@ -1,5 +1,5 @@
 ---
-title: "ECON 490 (K3) Report 1"
+title: "Introduction"
 author: "Hassan Rahim Kamil"
 date: "1/25/2019"
 output:
